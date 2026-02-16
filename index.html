@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PWA - Gestión de Artículos</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    input,
+    textarea,
+    button {
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    button {
+      background: #1976d2;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #135ba1;
+    }
+
+    .error {
+      color: red;
+      font-size: 13px;
+    }
+
+    .article-list {
+      margin-top: 20px;
+    }
+
+    .article-card {
+      background: #eef2f7;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Subir artículo</h1>
+
+    <form id="articleForm">
+      <input type="text" id="title" placeholder="Título del artículo" required />
+      <textarea id="abstract" placeholder="Resumen del artículo" required></textarea>
+      <input type="file" id="file" accept="application/pdf" required />
+      <button type="submit">Enviar artículo</button>
+      <div id="errorMessage" class="error"></div>
+    </form>
+
+    <div class="article-list">
+      <h2>Mis artículos</h2>
+      <div id="articlesContainer"></div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('articleForm');
+    const errorMessage = document.getElementById('errorMessage');
+    const articlesContainer = document.getElementById('articlesContainer');
+
+    function getArticles() {
+      return JSON.parse(localStorage.getItem('articles')) || [];
+    }
+
+    function saveArticles(articles) {
+      localStorage.setItem('articles', JSON.stringify(articles));
+    }
+
+    function renderArticles() {
+      const articles = getArticles();
+      articlesContainer.innerHTML = '';
+
+      articles.forEach(article => {
+        const div = document.createElement('div');
+        div.classList.add('article-card');
+
+        div.innerHTML = `
+        <div><strong>${article.title}</strong></div>
+        <div>${article.abstract}</div>
+        <div class="status">Estado: ${article.status}</div>
+        <div>Archivo: ${article.fileName}</div>
+      `;
+
+        articlesContainer.appendChild(div);
+      });
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      errorMessage.textContent = '';
+
+      const title = document.getElementById('title').value.trim();
+      const abstract = document.getElementById('abstract').value.trim();
+      const fileInput = document.getElementById('file');
+      const file = fileInput.files[0];
+
+      // Validación básica
+      if (!title || !abstract || !file) {
+        errorMessage.textContent = 'Todos los campos son obligatorios.';
+        return;
+      }
+
+      if (file.type !== 'application/pdf') {
+        errorMessage.textContent = 'Solo se permiten archivos PDF.';
+        return;
+      }
+
+      const articles = getArticles();
+
+      const newArticle = {
+        id: Date.now(),
+        title,
+        abstract,
+        fileName: file.name,
+        status: 'Enviado',
+        createdAt: new Date().toISOString()
+      };
+
+      articles.push(newArticle);
+      saveArticles(articles);
+
+      form.reset();
+      renderArticles();
+    });
+
+    // Inicialización
+    renderArticles();
+  </script>
+
+</body>
+
+</html>
