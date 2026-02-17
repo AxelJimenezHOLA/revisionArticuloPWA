@@ -1,0 +1,28 @@
+@startuml
+
+actor Editora
+
+participant ArticleDashboard
+participant ReviewerAssignmentPanel
+participant ReviewerManager
+participant ReviewerStorage
+participant ArticleManager
+participant ArticleStorage
+
+Editora -> ArticleDashboard : Selecciona artículo
+ArticleDashboard -> ReviewerAssignmentPanel : Abrir panel asignación
+
+Editora -> ReviewerAssignmentPanel : Seleccionar revisores
+ReviewerAssignmentPanel -> ReviewerManager : assignReviewers(article, reviewers)
+
+ReviewerManager -> ReviewerStorage : saveAssignment(data)
+ReviewerStorage --> ReviewerManager : confirmación
+
+ReviewerAssignmentPanel -> ArticleManager : updateStatus("En revisión")
+ArticleManager -> ArticleStorage : update(article)
+ArticleStorage --> ArticleManager : confirmación
+
+ArticleManager --> ReviewerAssignmentPanel : éxito
+ReviewerAssignmentPanel --> Editora : Mostrar confirmación
+
+@enduml

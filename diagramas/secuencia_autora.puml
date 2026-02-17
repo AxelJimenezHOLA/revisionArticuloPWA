@@ -1,0 +1,25 @@
+@startuml
+
+actor Autora
+
+participant ArticleUploadForm
+participant ValidationService
+participant ArticleManager
+participant ArticleStorage
+
+Autora -> ArticleUploadForm : Completa formulario
+ArticleUploadForm -> ValidationService : validar(datos)
+
+alt Datos inválidos
+    ValidationService --> ArticleUploadForm : errores
+    ArticleUploadForm --> Autora : Mostrar mensaje error
+else Datos válidos
+    ValidationService --> ArticleUploadForm : ok
+    ArticleUploadForm -> ArticleManager : createArticle(datos)
+    ArticleManager -> ArticleStorage : save(article)
+    ArticleStorage --> ArticleManager : confirmación
+    ArticleManager --> ArticleUploadForm : éxito
+    ArticleUploadForm --> Autora : Mostrar confirmación
+end
+
+@enduml

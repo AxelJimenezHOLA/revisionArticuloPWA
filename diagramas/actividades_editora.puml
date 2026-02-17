@@ -1,0 +1,21 @@
+@startuml
+start
+
+:Editora abre ArticleDashboard;
+
+:Selecciona artículo;
+
+:Abre ReviewerAssignmentPanel;
+
+:Selecciona revisores;
+
+:Confirmar asignación;
+
+:Guardar asignación en ReviewerStorage;
+
+:Actualizar estado artículo = "En revisión";
+
+:Actualizar dashboard;
+
+stop
+@enduml

@@ -1,0 +1,23 @@
+@startuml
+start
+
+:Revisor abre la PWA;
+
+:Selecciona artículo asignado;
+
+:Abre ReviewEditorOffline;
+
+:Redacta comentarios;
+
+:Guardar revisión en ReviewStorage (local);
+
+if (¿Hay conexión?) then (No)
+  :Marcar revisión = "Pendiente de envío";
+  stop
+else (Sí)
+  :Enviar revisión;
+  :Actualizar estado = "Entregada";
+endif
+
+stop
+@enduml

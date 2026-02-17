@@ -1,0 +1,24 @@
+@startuml
+start
+
+:Autora abre la PWA;
+
+:Accede a formulario de envío;
+
+:Ingresa título y autores;
+:Adjunta archivo;
+
+:Validar datos;
+
+if (¿Datos válidos?) then (No)
+  :Mostrar mensaje de error;
+  stop
+else (Sí)
+  :Guardar artículo en ArticleStorage;
+  :Asignar estado = "Enviado";
+  :Actualizar ArticleDashboard;
+  :Mostrar confirmación;
+endif
+
+stop
+@enduml

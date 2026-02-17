@@ -1,0 +1,33 @@
+@startuml
+
+actor Revisor
+
+participant ReviewEditorOffline
+participant ValidationService
+participant ReviewManager
+participant ReviewStorage
+
+Revisor -> ReviewEditorOffline : Redactar revisión
+ReviewEditorOffline -> ValidationService : validar(contenido)
+
+alt Contenido inválido
+    ValidationService --> ReviewEditorOffline : errores
+    ReviewEditorOffline --> Revisor : Mostrar mensaje error
+else Contenido válido
+    ValidationService --> ReviewEditorOffline : ok
+    ReviewEditorOffline -> ReviewManager : saveOffline(review)
+    ReviewManager -> ReviewStorage : save(review, estado="Pendiente")
+    ReviewStorage --> ReviewManager : confirmación
+
+    alt ¿Hay conexión?
+        ReviewEditorOffline -> ReviewManager : sendReview(review)
+        ReviewManager -> ReviewStorage : update(estado="Entregada")
+        ReviewStorage --> ReviewManager : confirmación
+        ReviewManager --> ReviewEditorOffline : éxito
+        ReviewEditorOffline --> Revisor : Confirmar envío
+    else Sin conexión
+        ReviewEditorOffline --> Revisor : Guardado local pendiente
+    end
+end
+
+@enduml
